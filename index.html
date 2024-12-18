@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代謝能（ME）計算機</title>
+    <style>
+        /* CSS樣式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            margin: 20px 0;
+        }
+        label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px; /* 调整标签宽度 */
+            margin-right: -165px; /* 调整标签和输入字段之间的间距 */
+        }
+        input[type="number"] {
+            width: 60px;
+            height: 24px;
+        }
+        input[type="button"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        p {
+            margin: 10px 0;
+        }
+        .dog-section,
+        .large-dog-section,
+        .cat-section {
+            margin-top: 20px;
+        }
+        .container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .container th, .container td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .container th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .container tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .container tr:hover {
+            background-color: #ddd;
+        }
+        .dog-section,
+        .large-dog-section,
+        .cat-section {
+            background-color: lightblue;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .large-dog-section {
+            background-color: coral;
+        }
+        .cat-section {
+            background-color: lightpink;
+        }
+        .shortcut-buttons {
+            margin-top: 5px;
+        }
+        .shortcut-buttons button {
+            width: 40px;
+            height: 22px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>代謝能（ME）計算機</h1>
+        <form>
+            <table>
+                <tr>
+                    <td><label for="protein">粗蛋白Crude Protein (%):</label></td>
+                    <td><input type="number" id="protein" step="1" min="0" max="100"></td>
+                    <td><div class="shortcut-buttons"><button type="button" onclick="setShortcut('protein', 30)">30</button></div></td>
+                </tr>
+                <tr>
+                    <td><label for="fat">粗脂肪Crude Fat (%):</label></td>
+                    <td><input type="number" id="fat" step="1" min="0" max="100"></td>
+                    <td><div class="shortcut-buttons"><button type="button" onclick="setShortcut('fat', 20)">20</button></div></td>
+                </tr>
+                <tr>
+                    <td><label for="fiber">粗纖維Crude Fiber (%):</label></td>
+                    <td><input type="number" id="fiber" step="1" min="0" max="100"></td>
+                    <td><div class="shortcut-buttons"><button type="button" onclick="setShortcut('fiber', 1)">1</button></div></td>
+                </tr>
+                <tr>
+                    <td><label for="moisture">水分Moisture (%):</label></td>
+                    <td><input type="number" id="moisture" step="1" min="0" max="100"></td>
+                    <td><div class="shortcut-buttons"><button type="button" onclick="setShortcut('moisture', 14)">14</button></div></td>
+                </tr>
+                <tr>
+                    <td><label for="ash">粗灰分Crude Ash (%):</label></td>
+                    <td><input type="number" id="ash" step="1" min="0" max="100"></td>
+                    <td><div class="shortcut-buttons"><button type="button" onclick="setShortcut('ash', 7)">7</button></div></td>
+                </tr>
+            </table>
+            <input type="button" value="計算" onclick="calculateME()">
+        </form>
+
+        <p>代謝能Metabolizable Energy (ME): <span id="meResult">0</span> kcal/kg</p>
+        <p>代謝能Metabolizable Energy (ME) Cup: <span id="meCupResult">0</span> kcal/cup</p>
+        <p>*US LEGAL CUP (240ml) contains 125g of food. 美國法定衡量杯（240ml）含125公克此飼料</p>
+    </div>
+    <div class="container dog-section">
+        <h2>每日建議餵食量 Daily Feeding Guide（中小型犬用）</h2>
+        <table id="dogFeedingGuide"></table>
+    </div>
+    <div class="container large-dog-section">
+        <h2>每日建議餵食量 Daily Feeding Guide（中大型犬用）</h2>
+        <table id="largeDogFeedingGuide"></table>
+    </div>
+    <div class="container cat-section">
+        <h2>每日建議餵食量 Daily Feeding Guide（貓用）</h2>
+        <table id="catFeedingGuide"></table>
+    </div>
+    <div class="container">
+        <h2>自訂餵食量</h2>
+        <form>
+            <table>
+                <tr>
+                    <td><label for="customInput">自訂:</label></td>
+                    <td><input type="number" id="customInput" step="0.01" min="0"></td>
+                    <td><div class="shortcut-buttons">
+                        <button type="button" onclick="setCustomShortcut(70)">70</button>
+                        <button type="button" onclick="setCustomShortcut(80)">80</button>
+                        <button type="button" onclick="setCustomShortcut(85)">85</button>
+                    </div></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript代碼
+        // 這裡放置JavaScript代碼，與HTML中的其他元素相關的JavaScript邏輯。
+
+        function calculateME() {
+            const protein = parseFloat(document.getElementById("protein").value) || 0;
+            const fat = parseFloat(document.getElementById("fat").value) || 0;
+            const fiber = parseFloat(document.getElementById("fiber").value) || 0;
+            const moisture = parseFloat(document.getElementById("moisture").value) || 0;
+            const ash = parseFloat(document.getElementById("ash").value) || 0;
+            const nfe = 100 - (protein + fat + fiber + moisture + ash);
+            const me = 10 * ((3.5 * protein) + (8.5 * fat) + (3.5 * nfe));
+            document.getElementById("meResult").textContent = me.toFixed(2);
+            const meCup = me / 8;
+            document.getElementById("meCupResult").textContent = meCup.toFixed(2);
+            updateFeedingGuides(me);
+        }
+
+        function setShortcut(elementId, value) {
+            document.getElementById(elementId).value = value;
+        }
+
+        function setCustomShortcut(value) {
+            document.getElementById('customInput').value = value;
+        }
+
+        function updateFeedingGuides(me) {
+            updateFeedingGuide('dogFeedingGuide', [2, 4, 6, 8, 10, 15, 20, 30], me, 1.6, "成犬");
+            updateFeedingGuide('largeDogFeedingGuide', [5, 10, 15, 20, 25, 30, 40, 50], me, 1.6, "成犬");
+            updateFeedingGuide('catFeedingGuide', [2, 3, 4, 5, 6, 7, 8, 9], me, 1.4, "成貓");
+        }
+
+        function updateFeedingGuide(elementId, weights, me, multiplier, petType) {
+            const element = document.getElementById(elementId);
+            let htmlContent = '<tr><th>體重 (kg / lb)</th><th>飼料量 (克 / 杯)</th><th>自訂建議餵食 (pcs)</th></tr>';
+            weights.forEach((weight, index) => {
+                const intakeGrams = calculateIntake(weight, me, multiplier);
+                const intakeCups = convertToFraction(intakeGrams, 125);
+                let weightInLbs = weight * 2.2;
+                weightInLbs = weightInLbs.toFixed(1);
+                weightInLbs = weightInLbs.replace('.0', ''); // 移除小数点后的0
+                const customInput = parseFloat(document.getElementById("customInput").value) || 0;
+                const customIntake = customInput !== 0 ? convertToFraction(intakeGrams / customInput, 1) : '';
+                const intakeFormatted = intakeCups !== '0' ? `${intakeGrams} grams / ${intakeCups} cups` : `${intakeGrams} grams`;
+                htmlContent += `<tr${index % 2 === 0 ? ' class="even-row"' : ''}><td>${weight} kg / ${weightInLbs} lb</td><td>${intakeFormatted}</td><td>${customIntake}</td></tr>`;
+            });
+            element.innerHTML = htmlContent;
+        }
+
+        function calculateIntake(weight, me, multiplier) {
+            const basicEnergyRequired = Math.pow(weight, 0.75) * 70;
+            const totalEnergyRequired = basicEnergyRequired * multiplier;
+            const intakeGrams = totalEnergyRequired / (me / 1000);
+            return Math.round(intakeGrams);
+        }
+
+        function convertToFraction(grams, baseUnit) {
+            const cups = grams / baseUnit;
+            const denominators = [8, 4, 2];
+            let nearestFraction = '';
+            let minDifference = Infinity;
+            denominators.forEach(denominator => {
+                const integerPart = Math.floor(cups);
+                const remainder = cups - integerPart;
+                const fractionPart = Math.round(remainder * denominator);
+                const fraction = integerPart + (fractionPart > 0 ? ` ${fractionPart}/${denominator}` : '');
+                const difference = Math.abs(cups - (integerPart + fractionPart / denominator));
+                if (difference < minDifference) {
+                    minDifference = difference;
+                    nearestFraction = fraction;
+                }
+            });
+
+            const [wholePart, fractionalPart] = nearestFraction.split(' ');
+            if (fractionalPart) {
+                const [numerator, denominator] = fractionalPart.split('/').map(Number);
+                if (numerator === denominator) {
+                    return `${wholePart ? parseInt(wholePart) + 1 : 1}`;
+                } else {
+                    const gcd = greatestCommonDivisor(numerator, denominator);
+                    const simplifiedNumerator = numerator / gcd;
+                    const simplifiedDenominator = denominator / gcd;
+                    nearestFraction = `${wholePart ? wholePart + ' ' : ''}${simplifiedNumerator}/${simplifiedDenominator}`;
+                }
+            }
+
+            return nearestFraction;
+        }
+
+        function greatestCommonDivisor(a, b) {
+            return b === 0 ? a : greatestCommonDivisor(b, a % b);
+        }
+    </script>
+
+</body>
+</html>

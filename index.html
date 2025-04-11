@@ -166,6 +166,14 @@
       font-size: 1em;
       color: #007bff;
     }
+    /* 調整分數部分字體大小：分數符號較大 */
+    .whole-part {
+      font-size: 1em;
+    }
+    .fraction-symbol {
+      font-size: 1.5em;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -265,18 +273,45 @@
         </tr>
       </table>
     </form>
-    <!-- 包裝熱量換算結果，根據 ME 及自訂數值計算 -->
+    <!-- 包裝熱量換算結果，根據 ME 與自訂數值計算 -->
     <p id="packageCalorieResult"></p>
   </div>
   
   <script>
-    // 主計算與互動功能
+    // 主計算與互動功能，新增驗證以排除空白與負數
     function calculateME() {
-      const protein = parseFloat(document.getElementById("protein").value) || 0;
-      const fat = parseFloat(document.getElementById("fat").value) || 0;
-      const fiber = parseFloat(document.getElementById("fiber").value) || 0;
-      const moisture = parseFloat(document.getElementById("moisture").value) || 0;
-      const ash = parseFloat(document.getElementById("ash").value) || 0;
+      // 取出各欄位的原始字串並移除空白
+      const proteinStr = document.getElementById("protein").value.trim();
+      const fatStr = document.getElementById("fat").value.trim();
+      const fiberStr = document.getElementById("fiber").value.trim();
+      const moistureStr = document.getElementById("moisture").value.trim();
+      const ashStr = document.getElementById("ash").value.trim();
+
+      // 若有欄位未填，則提示錯誤
+      if(proteinStr === "" || fatStr === "" || fiberStr === "" || moistureStr === "" || ashStr === "") {
+        alert("請填寫所有主要營養成分欄位！");
+        return;
+      }
+      
+      // 轉成數值
+      const protein = parseFloat(proteinStr);
+      const fat = parseFloat(fatStr);
+      const fiber = parseFloat(fiberStr);
+      const moisture = parseFloat(moistureStr);
+      const ash = parseFloat(ashStr);
+      
+      // 檢查是否有負數值
+      if(protein < 0 || fat < 0 || fiber < 0 || moisture < 0 || ash < 0) {
+        alert("請勿輸入負數值！");
+        return;
+      }
+      
+      // 若全為零，則無法計算
+      if(protein === 0 && fat === 0 && fiber === 0 && moisture === 0 && ash === 0) {
+        alert("請輸入有效的數值，不可全為零！");
+        return;
+      }
+      
       const nfe = 100 - (protein + fat + fiber + moisture + ash);
       const me = 10 * ((3.5 * protein) + (8.5 * fat) + (3.5 * nfe));
       document.getElementById("meResult").textContent = me.toFixed(2);
@@ -381,7 +416,7 @@
       return b === 0 ? a : greatestCommonDivisor(b, a % b);
     }
     
-    // 利用 mapping 將特定分數轉換成 Unicode 分數符號
+    // 修改後的 getUnicodeFraction：分數符號部分用獨立標籤並設定較大字體
     function getUnicodeFraction(whole, num, denom) {
       const mapping = {
         "1/2": "½",
@@ -405,13 +440,17 @@
       };
       const key = num + "/" + denom;
       if (mapping[key]) {
-        return whole ? whole + mapping[key] : mapping[key];
+        return whole 
+          ? `<span class="whole-part">${whole}</span><span class="fraction-symbol">${mapping[key]}</span>`
+          : `<span class="fraction-symbol">${mapping[key]}</span>`;
       } else {
-        return whole ? whole + " " + num + "/" + denom : num + "/" + denom;
+        return whole 
+          ? `<span class="whole-part">${whole}</span> <span class="fraction-symbol">${num}/${denom}</span>`
+          : `<span class="fraction-symbol">${num}/${denom}</span>`;
       }
     }
     
-    // 包裝熱量換算：公式 (ME (kcal/kg) × 自訂數值 (g)) ÷ 1000
+    // 包裝熱量換算公式： (ME (kcal/kg) * 自訂數值 (g)) ÷ 1000
     function updatePackageCalorie(me) {
       const customValue = parseFloat(document.getElementById("customInput").value) || 0;
       const resultElem = document.getElementById("packageCalorieResult");

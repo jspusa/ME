@@ -1,384 +1,492 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>BOM計算機</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 20px;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        form {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        input[type="number"], input[type="text"] {
-            width: 100px;
-            padding: 5px;
-            margin: 5px;
-        }
-        .material-input {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border: 1px solid #ddd;
-            cursor: grab;
-        }
-        .material-input strong {
-            margin-right: 10px;
-        }
-        .drag-over {
-            background-color: #ccc;
-        }
-        .add-button, .calculate-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-            font-size: 16px;
-            margin: 10px;
-        }
-        .calculate-button {
-            background-color: #008CBA;
-        }
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-            padding: 8px;
-            text-align: left;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-        }
-        th {
-            background-color: #007bff;
-            color: white;
-        }
-        .results-section {
-            margin-top: 20px;
-        }
-        .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            display: none;
-        }
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .common-ingredients {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .category {
-            flex: 1;
-            margin: 0 5px;
-        }
-        .category h3 {
-            margin: 0;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .category-content {
-            display: none;
-            flex-wrap: wrap;
-            gap: 5px;
-            padding: 10px 0;
-        }
-        .category-content button {
-            flex: 1 0 auto;
-            margin: 2px;
-            padding: 5px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .category.meat h3 {
-            background-color: #FF8C00;
-        }
-        .category.plant h3 {
-            background-color: #90EE90;
-        }
-        .category.nutrient h3 {
-            background-color: #ADD8E6;
-        }
-        .category.disabled h3 {
-            background-color: #d3d3d3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>代謝能（ME）計算機</title>
+  <!-- Google 字體，可增添現代感 -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* 全域設定，保留原本顏色 */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      animation: fadeBackground 5s ease-in-out infinite alternate;
+      min-height: 100vh;
+    }
+    @keyframes fadeBackground {
+      from { opacity: 0.95; }
+      to { opacity: 1; }
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      animation: fadeInUp 0.8s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    form {
+      margin: 20px 0;
+    }
+    label {
+      font-weight: bold;
+      display: inline-block;
+      width: 200px;
+      margin-right: -165px;
+    }
+    input[type="number"] {
+      width: 60px;
+      height: 24px;
+      padding: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    input[type="number"]:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0,123,255,0.5);
+      outline: none;
+    }
+    input[type="button"] {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background-color 0.3s ease;
+    }
+    input[type="button"]:hover {
+      background-color: #0056b3;
+      transform: scale(1.03);
+    }
+    p {
+      margin: 10px 0;
+      text-align: center;
+      font-size: 1.1em;
+      color: #444;
+    }
+    .container table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    .container th, .container td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      transition: background-color 0.3s ease;
+    }
+    .container th {
+      background-color: #007bff;
+      color: #fff;
+    }
+    .container tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .container tr:hover {
+      background-color: #ddd;
+    }
+    /* 寵物區塊保留原本配色 */
+    .dog-section {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: lightblue;
+      border-radius: 5px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+    .large-dog-section {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: coral;
+      border-radius: 5px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+    .cat-section {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: lightpink;
+      border-radius: 5px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+    /* 快捷鍵按鈕 */
+    .shortcut-buttons {
+      margin-top: 5px;
+    }
+    .shortcut-buttons button {
+      width: 40px;
+      height: 22px;
+      margin-bottom: 5px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+    .shortcut-buttons button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    /* 合併自訂餵食量與包裝熱量換算區塊 */
+    .custom-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .custom-section label {
+      display: inline-block;
+      width: auto;
+      margin-right: 5px;
+      font-weight: normal;
+    }
+    .custom-section input[type="number"] {
+      width: 80px;
+    }
+    .custom-section .shortcut-buttons button {
+      width: 50px;
+    }
+    .custom-section p {
+      margin-top: 10px;
+      font-size: 1em;
+      color: #007bff;
+    }
+    /* 調整分數部分字體大小：分數符號較大 */
+    .whole-part {
+      font-size: 1em;
+    }
+    .fraction-symbol {
+      font-size: 1.5em;
+      vertical-align: middle;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>BOM計算機</h1>
-        <form id="bomForm">
-            <label for="yieldRate">出成率（%）：</label>
-            <input type="number" id="yieldRate" min="0" step="1" required placeholder="輸入出成率">
-            <button type="button" class="calculate-button" onclick="calculateMaterialsNeeded()">計算BOM表</button>
-            <div id="messageContainer" class="message"></div>
-        </form>
-        <div class="common-ingredients">
-            <div class="category meat">
-                <h3 onclick="toggleCategory('meat')">肉類</h3>
-                <div class="category-content" id="meat">
-                    <button type="button" onclick="addCommonMaterial('雞肉')">雞肉</button>
-                    <button type="button" onclick="addCommonMaterial('羊肉')">羊肉</button>
-                    <button type="button" onclick="addCommonMaterial('鴨肉')">鴨肉</button>
-                    <button type="button" onclick="addCommonMaterial('牛肉')">牛肉</button>
-                    <button type="button" onclick="addCommonMaterial('鹿肉')">鹿肉</button>
-                    <button type="button" onclick="addCommonMaterial('火雞肉')">火雞肉</button>
-                    <button type="button" onclick="addCommonMaterial('鴨肝')">鴨肝</button>
-                </div>
+  <div class="container">
+    <h1>代謝能（ME）計算機</h1>
+    <form>
+      <table>
+        <tr>
+          <td><label for="protein">粗蛋白Crude Protein (%):</label></td>
+          <td><input type="number" id="protein" step="1" min="0" max="100" placeholder="30"></td>
+          <td>
+            <div class="shortcut-buttons">
+              <button type="button" onclick="setShortcut('protein', 30)">30</button>
             </div>
-            <div class="category plant">
-                <h3 onclick="toggleCategory('plant')">植物類</h3>
-                <div class="category-content" id="plant">
-                    <button type="button" onclick="addCommonMaterial('豌豆蛋白')">豌豆蛋白</button>
-                    <button type="button" onclick="addCommonMaterial('樹薯澱粉')">樹薯澱粉</button>
-                    <button type="button" onclick="addCommonMaterial('椰子甘油')">椰子甘油</button>
-                    <button type="button" onclick="addCommonMaterial('甜菜根粉')">甜菜根粉</button>
-                    <button type="button" onclick="addCommonMaterial('亞麻仁籽油')">亞麻仁籽油</button>
-                </div>
+          </td>
+        </tr>
+        <tr>
+          <td><label for="fat">粗脂肪Crude Fat (%):</label></td>
+          <td><input type="number" id="fat" step="1" min="0" max="100" placeholder="20"></td>
+          <td>
+            <div class="shortcut-buttons">
+              <button type="button" onclick="setShortcut('fat', 20)">20</button>
             </div>
-            <div class="category nutrient">
-                <h3 onclick="toggleCategory('nutrient')">營養添加類</h3>
-                <div class="category-content" id="nutrient">
-                    <button type="button" onclick="addCommonMaterial('綜合礦物質')">綜合礦物質</button>
-                    <button type="button" onclick="addCommonMaterial('綜合維生素')">綜合維生素</button>
-                    <button type="button" onclick="addCommonMaterial('磷酸鈣')">磷酸鈣</button>
-                    <button type="button" onclick="addCommonMaterial('維生素E')">維生素E</button>
-                    <button type="button" onclick="addCommonMaterial('維生素B1')">維生素B1</button>
-                </div>
+          </td>
+        </tr>
+        <tr>
+          <td><label for="fiber">粗纖維Crude Fiber (%):</label></td>
+          <td><input type="number" id="fiber" step="1" min="0" max="100" placeholder="1"></td>
+          <td>
+            <div class="shortcut-buttons">
+              <button type="button" onclick="setShortcut('fiber', 1)">1</button>
             </div>
-        </div>
-        <div id="materialInputs"></div>
-        <div class="results-section">
-            <h2>每公斤半成品，所需原料投入量：</h2>
-            <ul id="resultsList"></ul>
-            <h2>BOM表用：</h2>
-            <table id="bomTable">
-                <tr>
-                    <th>原料名稱</th>
-                    <th>組成用量 (kg)</th>
-                    <th>底數</th>
-                </tr>
-            </table>
-        </div>
-    </div>
-
-<script>
-    let draggedElement = null;
-
-    function showMessage(message, type) {
-        const messageContainer = document.getElementById('messageContainer');
-        messageContainer.textContent = message;
-        messageContainer.className = 'message ' + type;
-        messageContainer.style.display = 'block';
-        setTimeout(() => {
-            messageContainer.style.display = 'none';
-        }, 3000);
+          </td>
+        </tr>
+        <tr>
+          <td><label for="moisture">水分Moisture (%):</label></td>
+          <td><input type="number" id="moisture" step="1" min="0" max="100" placeholder="14"></td>
+          <td>
+            <div class="shortcut-buttons">
+              <button type="button" onclick="setShortcut('moisture', 14)">14</button>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td><label for="ash">粗灰分Crude Ash (%):</label></td>
+          <td><input type="number" id="ash" step="1" min="0" max="100" placeholder="7"></td>
+          <td>
+            <div class="shortcut-buttons">
+              <button type="button" onclick="setShortcut('ash', 7)">7</button>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div style="text-align: center; margin-top: 20px;">
+        <input type="button" value="計算" onclick="calculateME()">
+      </div>
+    </form>
+    <p>代謝能Metabolizable Energy (ME): <span id="meResult">0</span> kcal/kg</p>
+    <p>代謝能Metabolizable Energy (ME) Cup: <span id="meCupResult">0</span> kcal/cup</p>
+    <p style="font-size: 0.9em; color: #555;">
+      *US LEGAL CUP (240ml) contains 125g of food. 美國法定衡量杯（240ml）含125公克此飼料
+    </p>
+    <p id="message" style="color: red; font-weight: bold;"></p>
+  </div>
+  
+  <div class="container dog-section">
+    <h2>每日建議餵食量 Daily Feeding Guide（中小型犬用）</h2>
+    <table id="dogFeedingGuide"></table>
+  </div>
+  <div class="container large-dog-section">
+    <h2>每日建議餵食量 Daily Feeding Guide（中大型犬用）</h2>
+    <table id="largeDogFeedingGuide"></table>
+  </div>
+  <div class="container cat-section">
+    <h2>每日建議餵食量 Daily Feeding Guide（貓用）</h2>
+    <table id="catFeedingGuide"></table>
+  </div>
+  
+  <!-- 合併自訂餵食量與包裝熱量換算區塊 -->
+  <div class="container custom-section">
+    <h2>自訂餵食量與包裝熱量換算</h2>
+    <form>
+      <table style="margin: 0 auto;">
+        <tr>
+          <td>
+            <label for="customInput">自訂重量(g):</label>
+          </td>
+          <td>
+            <input type="number" id="customInput" step="0.01" min="0" placeholder="例:148">
+          </td>
+          <td>
+            <div class="shortcut-buttons">
+              <button type="button" onclick="setCustomShortcut(85)">85</button>
+              <button type="button" onclick="setCustomShortcut(170)">170</button>
+              <button type="button" onclick="setCustomShortcut(454)">454</button>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <!-- 包裝熱量換算結果，根據 ME 與自訂數值計算 -->
+    <p id="packageCalorieResult"></p>
+  </div>
+  
+  <script>
+    function showMessage(msg) {
+      document.getElementById('message').textContent = msg;
     }
 
-    function toggleCategory(categoryId) {
-        const categoryContent = document.getElementById(categoryId);
-        const allCategories = document.querySelectorAll('.category-content');
-        allCategories.forEach(content => {
-            if (content.id !== categoryId) {
-                content.style.display = 'none';
-            }
-        });
-        categoryContent.style.display = categoryContent.style.display === 'none' ? 'flex' : 'none';
+    // 主計算與互動功能，新增驗證以排除空白與負數
+    function calculateME() {
+      // 取出各欄位的原始字串並移除空白
+      const proteinStr = document.getElementById("protein").value.trim();
+      const fatStr = document.getElementById("fat").value.trim();
+      const fiberStr = document.getElementById("fiber").value.trim();
+      const moistureStr = document.getElementById("moisture").value.trim();
+      const ashStr = document.getElementById("ash").value.trim();
 
-        const allHeaders = document.querySelectorAll('.category');
-        allHeaders.forEach(header => {
-            const headerTitle = header.querySelector('h3');
-            if (header.querySelector('.category-content') !== categoryContent) {
-                header.classList.toggle('disabled', categoryContent.style.display === 'flex');
-            } else {
-                header.classList.remove('disabled');
-            }
-        });
+      // 若有欄位未填，則提示錯誤
+      if(proteinStr === "" || fatStr === "" || fiberStr === "" || moistureStr === "" || ashStr === "") {
+        showMessage("請填寫所有主要營養成分欄位！");
+        return;
+      }
+      
+      // 轉成數值
+      const protein = parseFloat(proteinStr);
+      const fat = parseFloat(fatStr);
+      const fiber = parseFloat(fiberStr);
+      const moisture = parseFloat(moistureStr);
+      const ash = parseFloat(ashStr);
+      
+      // 檢查是否有負數值
+      if(protein < 0 || fat < 0 || fiber < 0 || moisture < 0 || ash < 0) {
+        showMessage("請勿輸入負數值！");
+        return;
+      }
+      
+      // 若全為零，則無法計算
+      if(protein === 0 && fat === 0 && fiber === 0 && moisture === 0 && ash === 0) {
+        showMessage("請輸入有效的數值，不可全為零！");
+        return;
+      }
+      
+      const nfe = 100 - (protein + fat + fiber + moisture + ash);
+      const me = 10 * ((3.5 * protein) + (8.5 * fat) + (3.5 * nfe));
+      document.getElementById("meResult").textContent = me.toFixed(2);
+      const meCup = me / 8;
+      document.getElementById("meCupResult").textContent = meCup.toFixed(2);
+      updateFeedingGuides(me);
+      updatePackageCalorie(me);
+      showMessage("");
     }
+    
+   function setShortcut(elementId, value) {
+     document.getElementById(elementId).value = value;
+      autoCalculate();
+   }
+    
+   function setCustomShortcut(value) {
+     document.getElementById('customInput').value = value;
+     const me = parseFloat(document.getElementById("meResult").textContent) || 0;
+     updatePackageCalorie(me);
+     autoCalculate();
+   }
 
-    function addMaterialInput(name = '', amount = '') {
-        const container = document.getElementById('materialInputs');
-        const index = container.children.length + 1;
-        const newInput = document.createElement('div');
-        newInput.className = 'material-input';
-        newInput.setAttribute('draggable', 'true');
-        newInput.innerHTML = `
-            <strong>${index}. </strong>
-            <label for="materialName${index}">原料名稱：</label>
-            <input type="text" name="materialName[]" id="materialName${index}" value="${name}" placeholder="名稱">
-            <label for="materialAmount${index}">原料量（公斤）：</label>
-            <input type="number" name="materialAmount[]" id="materialAmount${index}" value="${amount}" min="0" step="0.01" placeholder="公斤">
-            <button type="button" onclick="removeMaterialInput(this)">刪除</button>
-        `;
-        newInput.addEventListener('dragstart', handleDragStart);
-        newInput.addEventListener('dragover', handleDragOver);
-        newInput.addEventListener('drop', handleDrop);
-        newInput.addEventListener('dragend', handleDragEnd);
-        container.appendChild(newInput);
-        updateIndexes();
+    function autoCalculate() {
+      const ids = ['protein','fat','fiber','moisture','ash'];
+      const filled = ids.every(id => document.getElementById(id).value.trim() !== '');
+      if (filled) {
+        calculateME();
+      }
     }
-
-    function addCommonMaterial(name) {
-        addMaterialInput(name);
+    
+    function updateFeedingGuides(me) {
+      updateFeedingGuide('dogFeedingGuide', [2, 4, 6, 8, 10, 15, 20, 30], me, 1.6);
+      updateFeedingGuide('largeDogFeedingGuide', [5, 10, 15, 20, 25, 30, 40, 50], me, 1.6);
+      updateFeedingGuide('catFeedingGuide', [2, 3, 4, 5, 6, 7, 8, 9], me, 1.4);
     }
-
-    function removeMaterialInput(button) {
-        const container = document.getElementById('materialInputs');
-        container.removeChild(button.parentNode);
-        updateIndexes();
+    
+    function updateFeedingGuide(elementId, weights, me, multiplier) {
+      const element = document.getElementById(elementId);
+      let htmlContent = '<tr><th>體重 (kg / lb)</th><th>飼料量 (克 / 杯)</th><th>自訂建議餵食 (pcs)</th></tr>';
+      weights.forEach((weight, index) => {
+        const intakeGrams = calculateIntake(weight, me, multiplier);
+        const intakeCups = convertToFraction(intakeGrams, 125);
+        let weightInLbs = (weight * 2.2).toFixed(1);
+        weightInLbs = weightInLbs.replace('.0', '');
+        const customInput = parseFloat(document.getElementById("customInput").value) || 0;
+        const customIntake = customInput !== 0 ? convertToFraction(intakeGrams / customInput, 1) : '';
+        const intakeFormatted = intakeCups ? `${intakeGrams} grams / ${intakeCups}` : `${intakeGrams} grams`;
+        htmlContent += `<tr${index % 2 === 0 ? ' class="even-row"' : ''}>
+                          <td>${weight} kg / ${weightInLbs} lb</td>
+                          <td>${intakeFormatted}</td>
+                          <td>${customIntake}</td>
+                        </tr>`;
+      });
+      element.innerHTML = htmlContent;
     }
-
-    function handleDragStart(e) {
-        draggedElement = this;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.outerHTML);
+    
+    function calculateIntake(weight, me, multiplier) {
+      const basicEnergyRequired = Math.pow(weight, 0.75) * 70;
+      const totalEnergyRequired = basicEnergyRequired * multiplier;
+      const intakeGrams = totalEnergyRequired / (me / 1000);
+      return Math.round(intakeGrams);
     }
-
-    function handleDragOver(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        this.classList.add('drag-over');
-    }
-
-    function handleDrop(e) {
-        e.preventDefault();
-        if (draggedElement !== this) {
-            this.parentNode.insertBefore(draggedElement, this);
-            this.classList.remove('drag-over');
-            updateIndexes();
+    
+    // 更新後的 convertToFraction：直接回傳 Unicode 分數（若有對應符號）
+    function convertToFraction(grams, baseUnit) {
+      const cups = grams / baseUnit;
+      const denominators = [8, 4, 2];
+      let nearestFraction = '';
+      let minDifference = Infinity;
+      denominators.forEach((denom) => {
+        const integerPart = Math.floor(cups);
+        const remainder = cups - integerPart;
+        const fractionPart = Math.round(remainder * denom);
+        const fracStr = integerPart + (fractionPart > 0 ? ` ${fractionPart}/${denom}` : '');
+        const difference = Math.abs(cups - (integerPart + fractionPart / denom));
+        if (difference < minDifference) {
+          minDifference = difference;
+          nearestFraction = fracStr;
         }
-    }
-
-    function handleDragEnd(e) {
-        document.querySelectorAll('.material-input').forEach(col => col.classList.remove('drag-over'));
-    }
-
-    function updateIndexes() {
-        const materials = document.querySelectorAll('.material-input');
-        materials.forEach((material, index) => {
-            material.querySelector('strong').textContent = `${index + 1}. `;
-        });
-    }
-
-    function calculateMaterialsNeeded() {
-        const yieldRate = parseFloat(document.getElementById('yieldRate').value) / 100;
-        if (isNaN(yieldRate) || yieldRate <= 0) {
-            showMessage("請輸入有效的出成率（大於0）。", "error");
-            return;
+      });
+      
+      if (nearestFraction.trim() === "0") {
+        return "";
+      }
+      
+      const parts = nearestFraction.split(' ');
+      let wholePart = "";
+      let fractionPart = "";
+      if (parts.length === 2) {
+        if (parts[0] !== "0") {
+          wholePart = parts[0];
         }
-
-        const names = document.querySelectorAll('input[name="materialName[]"]');
-        const amounts = document.querySelectorAll('input[name="materialAmount[]"]');
-        let totalMaterialInput = 0;
-        let valid = true;
-        amounts.forEach(amount => {
-            const value = parseFloat(amount.value);
-            if (isNaN(value) || value <= 0) {
-                showMessage("請輸入有效的原料量（大於0）。", "error");
-                valid = false;
-                return;
-            }
-            totalMaterialInput += value;
-        });
-        if (!valid || totalMaterialInput <= 0) {
-            return;
+        fractionPart = parts[1];
+      } else if (parts.length === 1) {
+        if (parts[0].indexOf('/') !== -1) {
+          fractionPart = parts[0];
+        } else {
+          return parts[0];
         }
-
-        const totalProductOutput = totalMaterialInput * yieldRate;
-        const materialsData = [];
-
-        names.forEach((name, i) => {
-            const individualInput = parseFloat(amounts[i].value);
-            const materialPerKgProduct = individualInput / totalProductOutput;
-            const percentageOfTotal = (individualInput / totalMaterialInput) * 100;
-            materialsData.push({
-                name: name.value,
-                materialPerKgProduct: materialPerKgProduct,
-                percentageOfTotal: percentageOfTotal
-            });
-        });
-
-        materialsData.sort((a, b) => b.percentageOfTotal - a.percentageOfTotal);
-
-        const resultsList = document.getElementById('resultsList');
-        const bomTable = document.getElementById('bomTable');
-        resultsList.innerHTML = '';
-        while (bomTable.rows.length > 1) {
-            bomTable.deleteRow(1);
-        }
-
-        materialsData.forEach((material, index) => {
-            const resultItem = document.createElement('li');
-            resultItem.textContent = `${index + 1}. ${material.name}: ${material.materialPerKgProduct.toFixed(4)} 公斤 (${material.percentageOfTotal.toFixed(2)}%)`;
-            resultsList.appendChild(resultItem);
-
-            let base = 1;
-            let formattedAmount = material.materialPerKgProduct;
-            while (formattedAmount < 0.1) {
-                base *= 10;
-                formattedAmount *= 10;
-            }
-            const row = bomTable.insertRow(-1);
-            row.insertCell(0).textContent = `${index + 1}. ${material.name}`;
-            row.insertCell(1).textContent = `${formattedAmount.toFixed(3)} 公斤`;
-            row.insertCell(2).textContent = base;
-        });
-
-        showMessage("計算成功！", "success");
-
-        // 收起所有類別
-        document.querySelectorAll('.category-content').forEach(categoryContent => {
-            categoryContent.style.display = 'none';
-        });
-
-        // 恢復所有標題顏色
-        document.querySelectorAll('.category').forEach(header => {
-            header.classList.remove('disabled');
-        });
+      }
+      
+      if (fractionPart.indexOf('/') !== -1) {
+        let [numerator, denominator] = fractionPart.split('/').map(Number);
+        const gcd = greatestCommonDivisor(numerator, denominator);
+        numerator = numerator / gcd;
+        denominator = denominator / gcd;
+        return getUnicodeFraction(wholePart, numerator, denominator);
+      }
+      return wholePart;
     }
-
-    // 初始化，打開所有類別
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.category-content').forEach(categoryContent => {
-            categoryContent.style.display = 'none';
-        });
+    
+    function greatestCommonDivisor(a, b) {
+      return b === 0 ? a : greatestCommonDivisor(b, a % b);
+    }
+    
+    // 修改後的 getUnicodeFraction：分數符號部分用獨立標籤並設定較大字體
+    function getUnicodeFraction(whole, num, denom) {
+      const mapping = {
+        "1/2": "½",
+        "1/3": "⅓",
+        "2/3": "⅔",
+        "1/4": "¼",
+        "3/4": "¾",
+        "1/5": "⅕",
+        "2/5": "⅖",
+        "3/5": "⅗",
+        "4/5": "⅘",
+        "1/6": "⅙",
+        "5/6": "⅚",
+        "1/8": "⅛",
+        "3/8": "⅜",
+        "5/8": "⅝",
+        "7/8": "⅞",
+        "1/7": "⅐",
+        "1/9": "⅑",
+        "1/10": "⅒"
+      };
+      const key = num + "/" + denom;
+      if (mapping[key]) {
+        return whole 
+          ? `<span class="whole-part">${whole}</span><span class="fraction-symbol">${mapping[key]}</span>`
+          : `<span class="fraction-symbol">${mapping[key]}</span>`;
+      } else {
+        return whole 
+          ? `<span class="whole-part">${whole}</span> <span class="fraction-symbol">${num}/${denom}</span>`
+          : `<span class="fraction-symbol">${num}/${denom}</span>`;
+      }
+    }
+    
+    // 包裝熱量換算公式： (ME (kcal/kg) * 自訂數值 (g)) ÷ 1000
+    function updatePackageCalorie(me) {
+      const customValue = parseFloat(document.getElementById("customInput").value) || 0;
+      const resultElem = document.getElementById("packageCalorieResult");
+      if (customValue > 0 && me > 0) {
+        const packageCalorie = (me * customValue) / 1000;
+        resultElem.textContent = "每包熱量: " + packageCalorie.toFixed(2) + " kcal";
+      } else {
+        resultElem.textContent = "";
+      }
+    }
+    
+    // 當自訂輸入改變時，同步更新包裝熱量換算結果
+    document.getElementById("customInput").addEventListener("input", function(){
+      const me = parseFloat(document.getElementById("meResult").textContent) || 0;
+      updatePackageCalorie(me);
     });
-</script>
 
+    ['protein','fat','fiber','moisture','ash'].forEach(id => {
+      document.getElementById(id).addEventListener('input', autoCalculate);
+    });
+  </script>
 </body>
 </html>
